@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — WorkPortal{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+.today-banner { background: linear-gradient(135deg, #1a2060 0%, #0e1233 100%);
+  border: 1px solid rgba(79,107,244,.3); border-radius: var(--radius); padding: 22px 26px;
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.today-greeting { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.today-date { color: var(--muted); font-size: 13px; }
+.today-shift { text-align: right; }
+.today-shift-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.today-shift-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+.leave-bar { height: 6px; background: var(--surface2); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.leave-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width .6s; }
+</style>
+
+<!-- TODAY BANNER -->
+<div class="today-banner">
+  <div>
+    <div class="today-greeting">Good day, {{ current_user.name.split()[0] }} 👋</div>
+    <div class="today-date">{{ today | replace('-', ' ') }} &bull; {{ current_user.emp_id }} &bull; {{ current_user.department }}</div>
+  </div>
+  <div class="today-shift">
+    <div class="today-shift-label">Today's Shift</div>
+    {% if today_duty %}
+      <div class="today-shift-val">{{ today_duty['shift'] }}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">{{ today_duty['start_time'] }} – {{ today_duty['end_time'] }} &bull; {{ today_duty['location'] }}</div>
+    {% else %}
+      <div class="today-shift-val" style="color:var(--green)">Day Off</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="grid-4" style="margin-bottom:22px">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(79,107,244,.15);color:var(--accent)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Shifts This Month</div>
+      <div class="stat-value">{{ month_duties }}</div>
+      <div class="stat-sub">Scheduled duties</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(34,197,94,.15);color:var(--green)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Leave Remaining</div>
+      <div class="stat-value" style="color:var(--green)">{{ current_user.remaining_leave }}</div>
+      <div class="stat-sub">of {{ current_user.total_leave_days }} days total</div>
+      <div class="leave-bar"><div class="leave-bar-fill" data-progress="{{ (current_user.used_leave_days / current_user.total_leave_days * 100)|int }}"></div></div>
+      <script>document.querySelector('[data-progress]').style.width = document.querySelector('[data-progress]').dataset.progress + '%';</script>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(245,158,11,.15);color:var(--yellow)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><path stroke-linecap="round" stroke-width="1.8" d="M12 8v4l3 3"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Used Leave Days</div>
+      <div class="stat-value" style="color:var(--yellow)">{{ current_user.used_leave_days }}</div>
+      <div class="stat-sub">This leave year</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(6,182,212,.15);color:var(--cyan)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+    </div>
+    <div>
+      <div class="stat-label">Employee ID</div>
+      <div class="stat-value" style="font-size:18px">{{ current_user.emp_id }}</div>
+      <div class="stat-sub">{{ current_user.role }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM GRID -->
+<div class="grid-2" style="gap:22px">
+  <!-- UPCOMING DUTIES -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+      Upcoming Duties
+    </div>
+    {% if upcoming %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Shift</th><th>Hours</th><th>Location</th></tr></thead>
+          <tbody>
+            {% for d in upcoming %}
+            <tr>
+              <td style="font-weight:500">{{ d['work_date'] }}</td>
+              <td><span class="duty-pill shift-{{ d['shift']|lower }}">{{ d['shift'] }}</span></td>
+              <td style="color:var(--muted)">{{ d['start_time'] }}–{{ d['end_time'] }}</td>
+              <td style="color:var(--muted)">{{ d['location'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{{ url_for('duty_sheet') }}" class="btn btn-outline btn-full" style="margin-top:14px">View Full Schedule</a>
+    {% else %}
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+        No upcoming duties scheduled
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- RECENT LEAVES & NOTIFICATIONS -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Recent Leave Requests
+      </div>
+      {% if recent_leaves %}
+        {% for lv in recent_leaves %}
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(42,45,56,.5)">
+          <div>
+            <div style="font-size:14px;font-weight:500">{{ lv['leave_type'] }}</div>
+            <div style="font-size:12px;color:var(--muted)">{{ lv['start_date'] }} → {{ lv['end_date'] }} &bull; {{ lv['days'] }} day(s)</div>
+          </div>
+          <span class="badge {% if lv['status']=='Approved' %}badge-green{% elif lv['status']=='Pending' %}badge-yellow{% else %}badge-red{% endif %}">
+            {{ lv['status'] }}
+          </span>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('leaves') }}" class="btn btn-outline btn-full" style="margin-top:14px">Manage Leave</a>
+      {% else %}
+        <div class="empty-state" style="padding:20px">No leave requests yet</div>
+        <a href="{{ url_for('leaves') }}" class="btn btn-primary btn-full">Apply for Leave</a>
+      {% endif %}
+    </div>
+
+    {% if notifs %}
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Notifications
+        <span class="badge" style="background:rgba(239,68,68,.15);color:var(--red)">{{ notifs|length }}</span>
+      </div>
+      {% for n in notifs[:3] %}
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(42,45,56,.4)">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13px">{{ n['message'] }}</div>
+          <div style="font-size:11px;color:var(--muted)">{{ n['created_at'][:10] }}</div>
+        </div>
+      </div>
+      {% endfor %}
+      <a href="{{ url_for('notifications') }}" class="btn btn-outline btn-full" style="margin-top:14px">View All</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

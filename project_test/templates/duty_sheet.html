@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Duty Sheet — WorkPortal{% endblock %}
+{% block page_title %}Duty Sheet{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="cal-nav">
+    <a href="{{ url_for('duty_sheet', month=prev_month) }}" class="btn btn-outline">← Previous</a>
+    <div class="cal-month">{{ month_name }}</div>
+    <a href="{{ url_for('duty_sheet', month=next_month) }}" class="btn btn-outline">Next →</a>
+  </div>
+
+  <!-- SUMMARY ROW -->
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    {% set completed = duties|selectattr('status','eq','Completed')|list|length %}
+    {% set scheduled = duties|selectattr('status','eq','Scheduled')|list|length %}
+    {% set inprog = duties|selectattr('status','eq','In Progress')|list|length %}
+    <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:8px 16px;font-size:13px">
+      <span style="color:var(--green);font-weight:600">{{ completed }}</span> <span style="color:var(--muted)">Completed</span>
+    </div>
+    <div style="background:rgba(79,107,244,.1);border:1px solid rgba(79,107,244,.2);border-radius:8px;padding:8px 16px;font-size:13px">
+      <span style="color:var(--accent);font-weight:600">{{ scheduled }}</span> <span style="color:var(--muted)">Scheduled</span>
+    </div>
+    {% if inprog > 0 %}
+    <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:8px 16px;font-size:13px">
+      <span style="color:var(--yellow);font-weight:600">{{ inprog }}</span> <span style="color:var(--muted)">In Progress</span>
+    </div>
+    {% endif %}
+    <div style="background:rgba(122,127,148,.1);border:1px solid rgba(122,127,148,.2);border-radius:8px;padding:8px 16px;font-size:13px">
+      <span style="color:var(--text);font-weight:600">{{ duties|length }}</span> <span style="color:var(--muted)">Total Duties</span>
+    </div>
+  </div>
+
+  {% if duties %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Shift</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Hours</th>
+          <th>Location</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in duties %}
+        {% set dt = d['work_date'] %}
+        <tr>
+          <td style="font-weight:600">{{ dt }}</td>
+          <td style="color:var(--muted)">
+            {% set days_map = {'0':'Mon','1':'Tue','2':'Wed','3':'Thu','4':'Fri','5':'Sat','6':'Sun'} %}
+            {{ dt }}
+          </td>
+          <td><span class="duty-pill shift-{{ d['shift']|lower }}">{{ d['shift'] }}</span></td>
+          <td style="font-family:monospace;font-size:13px">{{ d['start_time'] }}</td>
+          <td style="font-family:monospace;font-size:13px">{{ d['end_time'] }}</td>
+          <td style="color:var(--muted)">8h</td>
+          <td>{{ d['location'] }}</td>
+          <td>
+            <span class="badge
+              {% if d['status'] == 'Completed' %}badge-green
+              {% elif d['status'] == 'In Progress' %}badge-yellow
+              {% elif d['status'] == 'Scheduled' %}badge-blue
+              {% else %}badge-gray{% endif %}">
+              {{ d['status'] }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+    No duties scheduled for {{ month_name }}
+  </div>
+  {% endif %}
+</div>
+
+<!-- SHIFT LEGEND -->
+<div class="card" style="margin-top:18px">
+  <div class="card-title">Shift Legend</div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:8px"><span class="duty-pill shift-morning">Morning</span><span style="color:var(--muted);font-size:13px">08:00 – 16:00</span></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="duty-pill shift-afternoon">Afternoon</span><span style="color:var(--muted);font-size:13px">14:00 – 22:00</span></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="duty-pill shift-evening">Evening</span><span style="color:var(--muted);font-size:13px">16:00 – 00:00</span></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="duty-pill shift-night">Night</span><span style="color:var(--muted);font-size:13px">00:00 – 08:00</span></div>
+  </div>
+</div>
+{% endblock %}
