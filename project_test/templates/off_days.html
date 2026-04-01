@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Off Days — WorkPortal{% endblock %}
+{% block page_title %}Off Days{% endblock %}
+
+{% block content %}
+<div class="grid-2" style="gap:22px;align-items:start">
+  <!-- APPROVED OFF DAYS -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-width="2" d="M12 8v4l3 3"/></svg>
+      Approved Off Days
+    </div>
+    {% if off_days %}
+      {% for od in off_days %}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(42,45,56,.5)">
+        <div>
+          <div style="font-size:14px;font-weight:600">{{ od['off_date'] }}</div>
+          <div style="font-size:12px;color:var(--muted)">{{ od['reason'] }}</div>
+        </div>
+        <span class="badge {% if od['approved'] %}badge-green{% else %}badge-yellow{% endif %}">
+          {% if od['approved'] %}Approved{% else %}Pending{% endif %}
+        </span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/></svg>
+        No off days recorded
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- UPCOMING WEEKENDS -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Upcoming Weekends (Auto Off)
+    </div>
+    <div style="max-height:360px;overflow-y:auto">
+      {% for w in weekends[:16] %}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(42,45,56,.4)">
+        <div style="font-size:14px;font-weight:500">{{ w }}</div>
+        <span class="badge badge-cyan">Weekend</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- INFO CARD -->
+<div class="card" style="margin-top:18px">
+  <div class="card-title">Off Day Types</div>
+  <div class="grid-3" style="gap:14px">
+    <div style="background:var(--surface2);border-radius:10px;padding:14px;border-left:3px solid var(--green)">
+      <div style="font-weight:600;margin-bottom:4px">Weekends</div>
+      <div style="font-size:13px;color:var(--muted)">Saturday & Sunday are automatically designated as off days for all employees.</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:14px;border-left:3px solid var(--yellow)">
+      <div style="font-weight:600;margin-bottom:4px">Public Holidays</div>
+      <div style="font-size:13px;color:var(--muted)">National and bank holidays are added automatically to your off day calendar.</div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:14px;border-left:3px solid var(--accent)">
+      <div style="font-weight:600;margin-bottom:4px">Approved Days Off</div>
+      <div style="font-size:13px;color:var(--muted)">Additional off days granted by management or approved through leave requests.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

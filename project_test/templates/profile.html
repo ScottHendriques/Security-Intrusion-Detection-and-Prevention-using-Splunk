@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}My Profile — WorkPortal{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-color]').forEach(el => {
+      if (!el.style.background) el.style.background = el.dataset.color;
+    });
+  });
+</script>
+<div class="grid-2" style="gap:22px;align-items:start">
+  <!-- PROFILE CARD -->
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px">
+      <div data-color="{{ current_user.profile_color }}" style="width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;flex-shrink:0">
+        {{ current_user.initials }}
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.5px">{{ current_user.name }}</div>
+        <div style="color:var(--muted);font-size:14px">{{ current_user.role }}</div>
+        <div style="margin-top:6px"><span class="badge badge-blue">{{ current_user.emp_id }}</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Department</span>
+        <span style="font-weight:500">{{ current_user.department }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Email</span>
+        <span style="font-weight:500">{{ current_user.email }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Phone</span>
+        <span style="font-weight:500">{{ current_user.phone or '—' }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Join Date</span>
+        <span style="font-weight:500">{{ current_user.join_date }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Total Leave Days</span>
+        <span style="font-weight:500">{{ current_user.total_leave_days }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--muted)">Remaining Leave</span>
+        <span style="font-weight:500;color:var(--green)">{{ current_user.remaining_leave }} days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE + CHANGE PASSWORD -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        Edit Profile
+      </div>
+      <form method="POST" action="{{ url_for('profile') }}">
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-input" value="{{ current_user.phone or '' }}" placeholder="+353 87 000 0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title / Role</label>
+          <input type="text" name="role" class="form-input" value="{{ current_user.role }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Change Password
+      </div>
+      <form method="POST" action="{{ url_for('change_password') }}">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" name="old_password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" name="new_password" class="form-input" placeholder="Min. 6 characters" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" name="confirm_password" class="form-input" placeholder="Repeat new password" required>
+        </div>
+        <button type="submit" class="btn btn-danger">Update Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

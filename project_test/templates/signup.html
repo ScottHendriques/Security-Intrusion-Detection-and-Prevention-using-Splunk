@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — WorkPortal{% endblock %}
+{% block auth_content %}
+<div class="auth-page" style="padding: 40px 20px;">
+  <div class="auth-card" style="max-width:520px;">
+    <div class="auth-logo">Work<span>Portal</span></div>
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Join your team's employee portal</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'error' if category == 'error' else category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="name" class="form-input" placeholder="Jane Smith" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" name="email" class="form-input" placeholder="jane@company.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-input" placeholder="+353 87 000 0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Department *</label>
+          <select name="department" class="form-select" required>
+            <option value="">Select department</option>
+            <option>Operations</option>
+            <option>Human Resources</option>
+            <option>Finance</option>
+            <option>Information Technology</option>
+            <option>Sales & Marketing</option>
+            <option>Customer Service</option>
+            <option>Logistics</option>
+            <option>Administration</option>
+            <option>Security</option>
+            <option>Maintenance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job Title / Role *</label>
+          <input type="text" name="role" class="form-input" placeholder="e.g. Senior Analyst" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input type="password" name="password" class="form-input" placeholder="Min. 6 characters" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password *</label>
+          <input type="password" name="confirm_password" class="form-input" placeholder="Repeat password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">Create Account</button>
+    </form>
+
+    <div style="text-align:center;margin-top:22px;font-size:14px;color:var(--muted)">
+      Already have an account? <a href="{{ url_for('login') }}" class="link">Sign in</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
