@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, send_from_directory, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -15,7 +15,45 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access your portal.'
 login_manager.login_message_category = 'info'
 
+# ─── LOGGING CONFIGURATION ──────────────────────────────────────────────────
+
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Create a 'logs' directory if it doesn't exist
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+# Configure the Security Logger
+security_log_handler = RotatingFileHandler(
+    'logs/security_events.log', 
+    maxBytes=1000000, 
+    backupCount=5
+)
+
+# format = Splunk (Timestamp | Level | IP | Event | Message)
+log_formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(remote_addr)s | %(event_type)s | %(message)s')
+security_log_handler.setFormatter(log_formatter)
+
+# Create a custom logger
+security_logger = logging.getLogger('security')
+security_logger.setLevel(logging.INFO)
+security_logger.addHandler(security_log_handler)
+
 DATABASE = 'employee_portal.db'
+
+def log_security_event(level, event_type, message):
+    "To ensure all security logs have consistent metadata"
+    extra_data={
+        'remote_addr': request.remote_addr,
+        'event_type': event_type
+    }
+    if level.lower() == 'info':
+        security_logger.info(message, extra = extra_data)
+    elif level.lower() == 'warning':
+        security_logger.warning(message, extra = extra_data)
+    elif level.lower90 == 'error':
+        security_logger.error(message, extra = extra_data)
 
 # ─── DB HELPERS ─────────────────────────────────────────────────────────────
 
@@ -207,7 +245,11 @@ def login():
                         row['department'], row['role'], row['phone'], row['join_date'],
                         row['total_leave_days'], row['used_leave_days'], row['profile_color'])
             login_user(user, remember=request.form.get('remember'))
+            #Log successful Login
+            log_security_event('INFO', 'AUTH_SECCUESS', f"User login: {email}")
             return redirect(url_for('dashboard'))
+        #Log failed Login
+        log_security_event('WARNING', 'AUTH_FAILURE', f"Failed login Attempt: {email} ")
         flash('Invalid email or password. Please try again.', 'error')
     return render_template('login.html')
 
@@ -238,6 +280,8 @@ def signup():
         existing = conn.execute('SELECT id FROM employees WHERE email = ?', (email,)).fetchone()
         if existing:
             conn.close()
+            #Log attempt to re-register existing email
+            log_security_event('WARNING', 'SIGNUP_CONFLICT', f"Signup attempt with existing email: {email}")
             flash('Email already registered.', 'error')
             return render_template('signup.html')
 
@@ -255,6 +299,9 @@ def signup():
         emp_db_id = c.lastrowid
         conn.commit()
         conn.close()
+
+        #Log successful account creation
+        log_security_event('INFO', 'ACCOUNT_CREATED', f"New account created for email : {email} (EMP ID: {emp_id})")
 
         seed_demo_data(emp_id, emp_db_id)
         flash('Account created! Please log in.', 'success')
@@ -375,6 +422,8 @@ def leaves():
                          datetime.now().isoformat(), 'info'))
                     conn.commit()
                     conn.close()
+                    #log dynamic data entry
+                    log_security_event('INFO', 'LEAVE_SUBMITTED', f"User {current_user.email} applied for {days} days of {leave_type}")
                     flash('Leave request submitted successfully!', 'success')
                     return redirect(url_for('leaves'))
             except ValueError:
@@ -422,6 +471,8 @@ def profile():
                      (phone, role, current_user.id))
         conn.commit()
         conn.close()
+        #Log data modification
+        log_security_event('INFO', 'PROFILE_UPDATED', f"Profile updated by: {current_user.email} (Fields: Phone/Role)")
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('profile'))
     return render_template('profile.html')
@@ -435,6 +486,8 @@ def change_password():
     conn = get_db()
     row = conn.execute('SELECT password FROM employees WHERE id=?', (current_user.id,)).fetchone()
     if not check_password_hash(row['password'], old):
+        #Log failed password change 
+        log_security_event('WARNING', 'PASSWORD_CHANGE_FAILURE', f"Incorrect password attempt for: {current_user.email}")
         flash('Current password is incorrect.', 'error')
     elif new != confirm:
         flash('New passwords do not match.', 'error')
@@ -444,6 +497,8 @@ def change_password():
         conn.execute('UPDATE employees SET password=? WHERE id=?',
                      (generate_password_hash(new), current_user.id))
         conn.commit()
+        #Log successful security setting change
+        log_security_event('INFO', 'PASSWORD_CHANGED_SUCCESS', f"Password updated for: {current_user.email}")
         flash('Password changed successfully!', 'success')
     conn.close()
     return redirect(url_for('profile'))
@@ -469,6 +524,41 @@ def notifications():
     conn.commit()
     conn.close()
     return render_template('notifications.html', notifs=notifs)
+
+@app.route('/payslips')
+@login_required
+def payslips():
+    emp_id = current_user.emp_id
+    available_payslips = [
+        {'month': 'March 2026', 'filename': f"payslip_{emp_id}_2026_03.pdf.pdf"},
+        {'month': 'February 2026', 'filename': f"payslip_{emp_id}_2026_02.pdf.pdf"},
+        {'month': 'January 2026', 'filename': f"payslip_{emp_id}_2026_01.pdf.pdf"}
+    ]
+    return render_template('payslips.html', payslips = available_payslips)
+
+@app.route('/download-payslip/<filename>')
+@login_required
+def download_payslip(filename):
+    #Security check: PAth traversal Detection
+    if ".." in filename or filename.startswith("/"):
+        log_security_event('ERROR', 'MALICIOUS_PATH_TRAVERSAL', f"User {current_user.email} attempted path traversal: {filename}")
+        return "Access Denied: MAlicious Activity detected", 403
+    #Security Check: Unauthorised Access
+    if current_user.emp_id not in filename:
+        log_security_event('WARNING', 'UNAUTHORISED_FILE_ACCESS', f"User {current_user.email} tried to access a restricted payslip: {filename}")
+        return "Acess Denied: You do not have permission to view this file", 403
+    
+    #Log successful access
+    log_security_event('INFO', 'FILE_DOWNLOAD_SUCCESS', f"User {current_user.email} dwonloaded: {filename}")
+
+    #point to the folder where payslips are stored
+    directory = os.path.join(app.root_path, 'uploads', 'payslips')
+
+    #To ensure the directory exists
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    return send_from_directory(directory, filename)
 
 # ─── RUN ─────────────────────────────────────────────────────────────────────
 

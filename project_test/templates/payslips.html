@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}My Payslips — WorkPortal{% endblock %}
+{% block page_title %}My Payslips{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-title">
+        <svg width="16" fill=""none' stroke-"currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Payroll Documents
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Month / Year</th>
+                    <th>Document Name</th>
+                    <th style="text-align:right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ps in payslips %}
+                <tr>
+                    <td><strong>{{ ps.month }}</strong></td>
+                    <td style="color:var(--muted)">{{ ps.filename }}</td>
+                    <td style="text-align:right">
+                        <a href="{{ url_for('download_payslip', filename=ps.filename) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px">Download PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card" style="margin-top:20px; border-left:4px solid var(--accent)">
+    <div style="font-size:14px; color:var(--muted)">
+        <strong>Security Notice:</strong>All document access is logged for auditing purposes.
+        Your IP address ({{ request.remote_addr }}) has been recorded for this session.
+    </div>
+</div>
+{% endblock %}
