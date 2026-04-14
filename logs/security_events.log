@@ -12,3 +12,17 @@
 2026-04-02 16:14:28,121 | INFO | 127.0.0.1 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP4242_2026-02.pdf
 2026-04-02 16:16:42,523 | INFO | 127.0.0.1 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP4242_2026-03.pdf
 2026-04-02 16:16:45,462 | INFO | 127.0.0.1 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP4242_2026_03.pdf.pdf
+2026-04-14 13:28:39,088 | WARNING | 192.168.56.101 | SIGNUP_CONFLICT | Signup attempt with existing email: jane@email.com
+2026-04-14 13:28:56,317 | WARNING | 192.168.56.101 | AUTH_FAILURE | Failed login Attempt: ' OR 1=1 -- 
+2026-04-14 13:54:03,268 | INFO | 192.168.56.101 | ACCOUNT_CREATED | New account created for email : scott.h@gmail.com (EMP ID: EMP2375)
+2026-04-14 13:54:19,390 | WARNING | 192.168.56.101 | AUTH_FAILURE | Failed login Attempt: scott.h@gamil.com 
+2026-04-14 13:54:30,753 | INFO | 192.168.56.101 | AUTH_SECCUESS | User login: scott.h@gmail.com
+2026-04-14 13:55:12,410 | INFO | 192.168.56.101 | AUTH_SECCUESS | User login: ' OR 1=1 --
+2026-04-14 14:12:13,594 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --
+2026-04-14 14:14:37,534 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/Address/Role)
+2026-04-14 14:48:46,849 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026_03.pdf.pdf
+2026-04-14 14:48:52,677 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026_02.pdf.pdf
+2026-04-14 14:48:56,614 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026_01.pdf.pdf
+2026-04-14 14:56:26,677 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026_03.pdf.pdf
+2026-04-14 14:56:54,760 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026.pdf.pdf
+2026-04-14 14:56:58,756 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
