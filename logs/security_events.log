@@ -26,3 +26,28 @@
 2026-04-14 14:56:26,677 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026_03.pdf.pdf
 2026-04-14 14:56:54,760 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP2375_2026.pdf.pdf
 2026-04-14 14:56:58,756 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 10:57:25,324 | INFO | 192.168.56.101 | ACCOUNT_CREATED | New account created for email : scott.h@gmail.com (EMP ID: EMP9004)
+2026-04-16 11:07:27,395 | INFO | 192.168.56.101 | ACCOUNT_CREATED | New account created for email : scott.h@gmail.com (EMP ID: EMP3651)
+2026-04-16 11:07:50,700 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:10:29,346 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --
+2026-04-16 11:18:26,352 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --
+2026-04-16 11:19:20,773 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:19:43,254 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP3651_2026.pdf.pdf
+2026-04-16 11:19:54,283 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:19:59,206 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP5698_2026.pdf.pdf
+2026-04-16 11:21:33,130 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP3651_2026.pdf.pdf
+2026-04-16 11:21:41,851 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:23:25,635 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:23:32,613 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:23:37,019 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP5698_2026.pdf.pdf
+2026-04-16 11:23:54,383 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:23:59,843 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:26:14,673 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --
+2026-04-16 11:26:20,072 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:26:26,341 | WARNING | 192.168.56.101 | UNAUTHORISED_FILE_ACCESS | User scott.h@gmail.com tried to access a restricted payslip: payslip_EMP5698_2026.pdf.pdf
+2026-04-16 11:29:12,147 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:29:17,730 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --
+2026-04-16 11:29:26,517 | INFO | 192.168.56.101 | FILE_DOWNLOAD_SUCCESS | User scott.h@gmail.com dwonloaded: payslip_EMP4242_2026.pdf.pdf
+2026-04-16 11:41:32,480 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:42:48,683 | INFO | 192.168.56.101 | PROFILE_UPDATED | Profile updated by: scott.h@gmail.com (Fields: Phone/IBAN/Role)
+2026-04-16 11:43:17,335 | INFO | 192.168.56.101 | AUTH_SUCCESS | User login: ' OR 1=1 --

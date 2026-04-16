@@ -51,7 +51,7 @@ def log_security_event(level, event_type, message):
         security_logger.info(message, extra = extra_data)
     elif level.lower() == 'warning':
         security_logger.warning(message, extra = extra_data)
-    elif level.lower90 == 'error':
+    elif level.lower() == 'error':
         security_logger.error(message, extra = extra_data)
 
 # ─── DB HELPERS ─────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ def init_db():
         department TEXT NOT NULL,
         role TEXT NOT NULL,
         phone TEXT,
-        address TEXT,
+        iban TEXT,
         join_date TEXT NOT NULL,
         total_leave_days INTEGER DEFAULT 20,
         used_leave_days INTEGER DEFAULT 0,
@@ -133,7 +133,7 @@ def init_db():
 
 class User(UserMixin):
     def __init__(self, id, emp_id, name, email, department, role, phone,
-        address, join_date, total_leave_days, used_leave_days, profile_color):
+        iban, join_date, total_leave_days, used_leave_days, profile_color):
         self.id = id
         self.emp_id = emp_id
         self.name = name
@@ -141,7 +141,7 @@ class User(UserMixin):
         self.department = department
         self.role = role
         self.phone = phone
-        self.address = address
+        self.iban = iban
         self.join_date = join_date
         self.total_leave_days = total_leave_days
         self.used_leave_days = used_leave_days
@@ -163,7 +163,7 @@ def load_user(user_id):
     conn.close()
     if row:
         return User(row['id'], row['emp_id'], row['name'], row['email'],
-                    row['department'], row['role'], row['phone'], row['address'], row['join_date'],
+                    row['department'], row['role'], row['phone'], row['iban'], row['join_date'],
                     row['total_leave_days'], row['used_leave_days'], row['profile_color'])
     return None
 
@@ -244,7 +244,7 @@ def login():
         conn.close()
         if row :
             user = User(row['id'], row['emp_id'], row['name'], row['email'],
-                        row['department'], row['role'], row['phone'], row['address'], row['join_date'],
+                        row['department'], row['role'], row['phone'], row['iban'], row['join_date'],
                         row['total_leave_days'], row['used_leave_days'], row['profile_color'])
             login_user(user, remember=request.form.get('remember'))
             #Log successful Login
@@ -296,9 +296,9 @@ def signup():
 
         c = conn.cursor()
         c.execute('''INSERT INTO employees
-            (emp_id, name, email, password, department, role, phone, address, join_date, profile_color)
+            (emp_id, name, email, password, department, role, phone, iban, join_date, profile_color)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (emp_id, name, email, hashed, department, role, phone, address, join_date, color))
+            (emp_id, name, email, hashed, department, role, phone, '', join_date, color))
         emp_db_id = c.lastrowid
         conn.commit()
         conn.close()
@@ -468,15 +468,15 @@ def off_days():
 def profile():
     if request.method == 'POST':
         phone = request.form.get('phone', '').strip()
-        address = request.form.get('address', '').strip()
+        iban = request.form.get('iban', '').strip()
         role = request.form.get('role', '').strip()
         conn = get_db()
-        conn.execute('UPDATE employees SET phone=?, address=?, role=? WHERE id=?',
-                     (phone, address, role, current_user.id))
+        conn.execute('UPDATE employees SET phone=?, iban=?, role=? WHERE id=?',
+                     (phone, iban, role, current_user.id))
         conn.commit()
         conn.close()
         #Log data modification
-        log_security_event('INFO', 'PROFILE_UPDATED', f"Profile updated by: {current_user.email} (Fields: Phone/Address/Role)")
+        log_security_event('INFO', 'PROFILE_UPDATED', f"Profile updated by: {current_user.email} (Fields: Phone/IBAN/Role)")
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('profile'))
     return render_template('profile.html')
